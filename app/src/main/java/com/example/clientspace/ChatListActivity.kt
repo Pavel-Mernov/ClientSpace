@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.clientspace.databinding.ActivityChatListBinding
+import com.example.clientspace.ui.Chat
 import com.example.clientspace.ui.UserRepository
 
 
@@ -17,7 +18,9 @@ class ChatListActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChatListBinding
 
+    private lateinit var displayChats : List<Chat>
 
+    private lateinit var curUserId : String
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,9 +28,7 @@ class ChatListActivity : AppCompatActivity() {
         binding = ActivityChatListBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val curUserId = intent.getStringExtra("curUserId")
-
-        if (curUserId == null) {
+        curUserId = intent.getStringExtra("curUserId") ?: run {
             val errorString = "No user Id passed"
             Log.e("User id", errorString)
             throw Exception(errorString)
@@ -47,8 +48,8 @@ class ChatListActivity : AppCompatActivity() {
 
         // Настройка RecyclerView
         binding.chatListRecyclerView.layoutManager = LinearLayoutManager(this)
-        binding.chatListRecyclerView.adapter = ChatLinkAdapter(chats, curUserId)
-
+        bind(chats)
+        displayChats = chats
 
 
         val tvProfile = binding.tvProfile
@@ -76,11 +77,11 @@ class ChatListActivity : AppCompatActivity() {
                     }
 
 
-
-                    binding.chatListRecyclerView.adapter = ChatLinkAdapter(filteredChats, curUserId)
+                    bind(filteredChats)
+                    displayChats = filteredChats
                 }
                 else {
-                    binding.chatListRecyclerView.adapter = ChatLinkAdapter(chats, curUserId)
+                    bind(chats)
                 }
 
                 chatSearchView.clearFocus()
@@ -112,10 +113,21 @@ class ChatListActivity : AppCompatActivity() {
                 chatSearchView.text.clear()
 
                 searchButton.setImageResource(R.drawable.ic_search)
-                binding.chatListRecyclerView.adapter = ChatLinkAdapter(chats, curUserId)
+                bind(chats)
             }
 
 
         }
+    }
+
+    private fun bind(chats : List<Chat>) {
+        binding.chatListRecyclerView.adapter = ChatLinkAdapter(chats, curUserId)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // if we were searching certain chats, than we should display only filtered chats
+        bind(displayChats)
     }
 }
