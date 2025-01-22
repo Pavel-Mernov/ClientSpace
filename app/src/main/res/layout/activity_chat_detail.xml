@@ -1,0 +1,117 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <!-- Панель над чатом -->
+    <RelativeLayout
+        android:id="@+id/chatHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/color_blue_top"
+        android:paddingHorizontal="16dp">
+
+        <!-- Кнопка назад -->
+        <ImageButton
+            android:id="@+id/backButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_arrow_back"
+            android:layout_alignParentStart="true"
+            app:tint="@android:color/white" />
+
+        <!-- Аватар -->
+        <ImageView
+            android:id="@+id/chatAvatar"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_toEndOf="@id/backButton"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_default_avatar"
+            android:scaleType="centerCrop"
+             />
+
+        <!-- Имя пользователя -->
+        <TextView
+            android:id="@+id/chatUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/chatAvatar"
+            android:layout_marginStart="8dp"
+            android:paddingTop="8dp"
+            android:text="Имя пользователя"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <!-- Статус пользователя -->
+        <TextView
+            android:id="@+id/chatUserStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/chatUserName"
+            android:layout_alignStart="@id/chatUserName"
+            android:text="online"
+            android:gravity="center_vertical"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </RelativeLayout>
+
+    <!-- Список сообщений -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/messagesRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/chatHeader"
+        android:layout_above="@id/messageInputLayout"
+        android:padding="8dp" />
+
+    <!-- Поле ввода сообщения -->
+    <RelativeLayout
+        android:id="@+id/messageInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        android:paddingHorizontal="8dp"
+        android:elevation="4dp">
+
+        <!-- Кнопка вложений -->
+        <ImageButton
+            android:id="@+id/attachButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_attach"
+            app:tint="@android:color/darker_gray" />
+
+        <!-- Поле для ввода текста -->
+        <EditText
+            android:id="@+id/messageEditText"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@id/attachButton"
+            android:layout_toStartOf="@id/sendVoiceButton"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:hint="Напишите что-нибудь..."
+            android:padding="8dp"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
+
+        <!-- Кнопка отправки голосового сообщения -->
+        <ImageButton
+            android:id="@+id/sendVoiceButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentEnd="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_mic"
+            android:tag="ic_mic"
+            app:tint="@android:color/darker_gray" />
+    </RelativeLayout>
+
+</RelativeLayout>

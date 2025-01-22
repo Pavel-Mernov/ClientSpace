@@ -1,0 +1,39 @@
+<resources>
+    <string name="cannot_login">Не могу войти</string>
+    <string name="enter_access_code">Введите код доступа:</string>
+    <string name="title_activity_chat_list">ChatListActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="welcome_to_chat_list">Welcome to Chat List!</string>
+    <string name="str_username">Имя пользователя</string>
+    <string name="str_last_message">Последнее сообщение</string>
+    <string name="str_time">Время</string>
+    <string name="string_search">Поиск</string>
+    <string name="string_profile">Профиль</string>
+    <string name="incorrect_code">Неверный код</string>
+    <string name="app_name">ClientSpace</string>
+    <string name="_2">2</string>
+    <string name="_0">0</string>
+    <string name="_9">9</string>
+    <string name="_8">8</string>
+    <string name="_7">7</string>
+    <string name="_6">6</string>
+    <string name="_5">5</string>
+    <string name="_4">4</string>
+    <string name="_3">3</string>
+    <string name="_1">1</string>
+    <string name="at_string">\@</string>
+    <string name="default_password">000000</string>
+    <string name="string_change">Изменить</string>
+    <string name="str_access_code">Код доступа:</string>
+    <string name="to_messages">К сообщениям</string>
+    <string name="create_access_code">Придумайте код доступа</string>
+</resources>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <!-- Задаем цвет фона круга -->
+    <solid android:color="#E0E0E0" />
+
+    <!-- Границы круга (опционально) -->
+    <stroke
+        android:width="2dp"
+        android:color="#BDBDBD" />
+
+    <!-- Размер тени/отступов круга (опционально) -->
+    <padding
+        android:left="4dp"
+        android:top="4dp"
+        android:right="4dp"
+        android:bottom="4dp" />
+
+</shape>
+
