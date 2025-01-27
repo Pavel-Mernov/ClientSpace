@@ -1,18 +1,30 @@
 package com.example.clientspace
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.clientspace.databinding.ActivityChatDetailBinding
+import com.example.clientspace.ui.Chat
 import com.example.clientspace.ui.Message
+import com.example.clientspace.ui.User
 import com.example.clientspace.ui.UserRepository
 import java.time.LocalDateTime
 
 class ChatDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatDetailBinding
 
+    private val REQUEST_CODE_PICK_FILE = 100
+
+    private lateinit var user : User
+    private lateinit var chat : Chat
+
+    private val sendVoiceBtn
+        get() = binding.sendVoiceButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,13 +49,13 @@ class ChatDetailActivity : AppCompatActivity() {
 
         // Log.e("chat id", chatId.toString())
 
-        val user = UserRepository.findUserById(curUserId) ?: run {
+        user = UserRepository.findUserById(curUserId) ?: run {
             val exString = "No user with Id: $curUserId"
             Log.e("get user", exString)
             throw Exception(exString)
         }
 
-        val chat = user.chats.firstOrNull{ it.chatId == chatId } ?: run {
+        chat = user.chats.firstOrNull{ it.chatId == chatId } ?: run {
             val exString = "No chat with such Id : $chatId"
             Log.e("get chat", exString)
             throw Exception(exString)
@@ -51,7 +63,7 @@ class ChatDetailActivity : AppCompatActivity() {
 
         val chatName = chat.name
         val avatarBytes = chat.avatarImage // Получаем аватар
-        val avatarBitmap = ImageConverter.byteArrayToImage(avatarBytes)
+        val avatarBitmap = FileConverter.byteArrayToImage(avatarBytes)
         val messages = chat.messages // Получаем сообщения
 
         // Отображение данных
@@ -72,19 +84,21 @@ class ChatDetailActivity : AppCompatActivity() {
         binding.messagesRecyclerView.adapter = adapter
         binding.messagesRecyclerView.layoutManager = LinearLayoutManager(this)
 
-        val sendVoiceBtn = binding.sendVoiceButton
+
         val editMsgText = binding.messageEditText
+
+        val draft = chat.draft
+        val draftText = chat.draft.text
+
+        editMsgText.setText(draftText)
+
+        updateSendIcon()
 
         editMsgText.addTextChangedListener(
             afterTextChanged = { s ->
-                if (s.isNullOrBlank()) {
-                    sendVoiceBtn.setImageResource(R.drawable.ic_mic)
-                    sendVoiceBtn.tag = "ic_mic"
-                }
-                else {
-                    sendVoiceBtn.setImageResource(R.drawable.ic_send)
-                    sendVoiceBtn.tag = "ic_send"
-                }
+                draft.text = editMsgText.text.toString()
+                updateUser()
+
             }
         )
 
@@ -94,14 +108,69 @@ class ChatDetailActivity : AppCompatActivity() {
                 val newMessage = Message(curUserId, editMsgText.text.toString(), LocalDateTime.now())
 
                 chat.messages.add(newMessage)
+                draft.text = ""
+                draft.attachments.clear()
                 binding.messagesRecyclerView.adapter = MessagesAdapter(chat.messages, curUserId)
 
-                user.updateChat(chat)
-                UserRepository.updateUser(user)
+                updateUser()
 
                 editMsgText.text.clear()
             }
         }
+
+        val btnAttach : ImageButton = binding.attachButton
+        btnAttach.setOnClickListener{
+            openFilePicker()
+        }
     }
 
+    private fun openFilePicker() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "*/*" // Укажите тип файла, например "image/*" для изображений или "*/*" для всех файлов
+            addCategory(Intent.CATEGORY_OPENABLE) // Гарантирует, что будут показаны только открываемые файлы
+        }
+        startActivityForResult(Intent.createChooser(intent, "Выберите файл"), REQUEST_CODE_PICK_FILE)
+    }
+
+    @Deprecated("This method has been deprecated in favor of using the Activity Result API\n      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt\n      contracts for common intents available in\n      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for\n      testing, and allow receiving results in separate, testable classes independent from your\n      activity. Use\n      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)}\n      with the appropriate {@link ActivityResultContract} and handling the result in the\n      {@link ActivityResultCallback#onActivityResult(Object) callback}.")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQUEST_CODE_PICK_FILE && resultCode == RESULT_OK) {
+            val fileUri : Uri? = data?.data
+
+            if (fileUri != null) {
+                handleFile(fileUri)
+            }
+        }
+    }
+
+    private fun handleFile(uri: Uri) {
+        val fileBytes = FileConverter.uriToByteArray(contentResolver, uri)
+
+        if (fileBytes != null) {
+            chat.draft.attachments.add(fileBytes)
+
+            updateUser()
+        }
+    }
+
+
+
+    private fun updateUser() {
+        updateSendIcon()
+        user.updateChat(chat)
+        UserRepository.updateUser(user)
+    }
+
+    private fun updateSendIcon() {
+        if (chat.draft.text.isBlank() && chat.draft.attachments.isEmpty()) {
+            sendVoiceBtn.setImageResource(R.drawable.ic_mic)
+            sendVoiceBtn.tag = "ic_mic"
+        }
+        else {
+            sendVoiceBtn.setImageResource(R.drawable.ic_send)
+            sendVoiceBtn.tag = "ic_send"
+        }
+    }
 }

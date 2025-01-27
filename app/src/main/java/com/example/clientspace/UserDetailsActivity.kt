@@ -68,7 +68,7 @@ class UserDetailsActivity : AppCompatActivity() {
 
     private fun bind(user : User) {
 
-        userImage.setImageBitmap(ImageConverter.byteArrayToImage(user.image))
+        userImage.setImageBitmap(FileConverter.byteArrayToImage(user.image))
         userNameText.text = user.userName
         userDescriptionText.text = user.description ?: "No description available"
         userIdText.text = "@${user.userId}"
@@ -88,7 +88,7 @@ class UserDetailsActivity : AppCompatActivity() {
             val uri = data?.data
 
             if (uri != null) {
-                val byteArray = ImageConverter.uriToByteArray(contentResolver, uri)
+                val byteArray = FileConverter.uriToByteArray(contentResolver, uri)
 
                 if (byteArray != null)  {
                     user.image = byteArray

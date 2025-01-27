@@ -42,7 +42,7 @@ class ChatLinkAdapter(private val chats: List<Chat>, private val curUserId : Str
 
 
         fun bind(chat: Chat) {
-            avatarImageView.setImageBitmap(ImageConverter.byteArrayToImage(chat.avatarImage))
+            avatarImageView.setImageBitmap(FileConverter.byteArrayToImage(chat.avatarImage))
             nameTextView.text = chat.name
 
             val lastMessage = chat.messages.maxByOrNull { it.time }!!
@@ -50,12 +50,21 @@ class ChatLinkAdapter(private val chats: List<Chat>, private val curUserId : Str
             val lastMessageTime = lastMessage.time
             val lastMessageText = lastMessage.text
 
+            val draft = chat.draft
+
             timeTextView.text = DateTimeFormatter.ofPattern("dd MMM yyyy hh:mm").format(lastMessageTime)
 
-            lastMessageTextView.text = if (lastMessageText.length > 30)
-                lastMessageText.substring(0, 27) + "..."
-            else lastMessageText
-
+            if (chat.draft.text.isEmpty()) {
+                lastMessageTextView.text = if (lastMessageText.length > 30)
+                    lastMessageText.substring(0, 27) + "..."
+                else lastMessageText
+            }
+            else {
+                lastMessageTextView.text = "Черновик: " +
+                        if (draft.text.length > 20)
+                    draft.text.substring(0, 17) + "..."
+                        else draft
+            }
         }
     }
 }

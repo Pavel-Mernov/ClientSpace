@@ -8,7 +8,7 @@ import android.util.Log
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
-object ImageConverter {
+object FileConverter {
     fun uriToByteArray(contentResolver: ContentResolver, uri : Uri) : ByteArray? {
         return try {
             val inputStream : InputStream? = contentResolver.openInputStream(uri)

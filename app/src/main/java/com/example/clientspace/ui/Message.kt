@@ -7,7 +7,9 @@ import java.time.LocalDateTime
 
 @Parcelize
 data class Message(
-    val fromId : String,
+    var fromId : String,
     var text : String,
-    var time : LocalDateTime
+    var time : LocalDateTime,
+    val attachments : MutableList<ByteArray> = emptyList<ByteArray>().toMutableList()
+        // list of attached files
 ) : Parcelable
