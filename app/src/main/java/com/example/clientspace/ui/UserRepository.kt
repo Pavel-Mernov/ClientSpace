@@ -66,7 +66,7 @@ object UserRepository {
                         name = "Полина Дроздова",
                         messages = listOf(
                             Message(
-                                fromId = defaultUserId,
+                                fromId = "p_drozdova",
                                 text = "Мне нужен синий фон",
                                 time = LocalDateTime.now().minusHours(3).minusMinutes(20)
                             )

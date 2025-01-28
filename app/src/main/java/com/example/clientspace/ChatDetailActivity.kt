@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
@@ -25,6 +26,18 @@ class ChatDetailActivity : AppCompatActivity() {
 
     private val sendVoiceBtn
         get() = binding.sendVoiceButton
+
+    private val attachmentLayout
+        get() = binding.attachmentLayout
+
+    private val draft
+        get() = chat.draft
+
+    private var attachment
+        get() = draft.attachment
+        set(value) {
+            draft.attachment = value
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,12 +100,17 @@ class ChatDetailActivity : AppCompatActivity() {
 
         val editMsgText = binding.messageEditText
 
-        val draft = chat.draft
-        val draftText = chat.draft.text
+        val draftText = draft.text
 
         editMsgText.setText(draftText)
 
+        updateAttachments()
         updateSendIcon()
+
+        binding.btnRemoveAttachment.setOnClickListener{
+            attachment = null // remove attachment
+            updateUser()
+        }
 
         editMsgText.addTextChangedListener(
             afterTextChanged = { s ->
@@ -105,11 +123,11 @@ class ChatDetailActivity : AppCompatActivity() {
         sendVoiceBtn.setOnClickListener{
             if (sendVoiceBtn.tag == "ic_send") {
                 // Log.e("Send message", "ready to send")
-                val newMessage = Message(curUserId, editMsgText.text.toString(), LocalDateTime.now())
+                val newMessage = Message(curUserId, editMsgText.text.toString(), LocalDateTime.now(), attachment = draft.attachment)
 
                 chat.messages.add(newMessage)
                 draft.text = ""
-                draft.attachments.clear()
+                draft.attachment = null
                 binding.messagesRecyclerView.adapter = MessagesAdapter(chat.messages, curUserId)
 
                 updateUser()
@@ -146,10 +164,10 @@ class ChatDetailActivity : AppCompatActivity() {
     }
 
     private fun handleFile(uri: Uri) {
-        val fileBytes = FileConverter.uriToByteArray(contentResolver, uri)
+        val file = FileConverter.uriToFile(contentResolver, uri)
 
-        if (fileBytes != null) {
-            chat.draft.attachments.add(fileBytes)
+        if (file != null) {
+            attachment = file
 
             updateUser()
         }
@@ -158,13 +176,16 @@ class ChatDetailActivity : AppCompatActivity() {
 
 
     private fun updateUser() {
+
+        updateAttachments()
         updateSendIcon()
+
         user.updateChat(chat)
         UserRepository.updateUser(user)
     }
 
     private fun updateSendIcon() {
-        if (chat.draft.text.isBlank() && chat.draft.attachments.isEmpty()) {
+        if (chat.draft.text.isBlank() && chat.draft.attachment == null) {
             sendVoiceBtn.setImageResource(R.drawable.ic_mic)
             sendVoiceBtn.tag = "ic_mic"
         }
@@ -172,5 +193,28 @@ class ChatDetailActivity : AppCompatActivity() {
             sendVoiceBtn.setImageResource(R.drawable.ic_send)
             sendVoiceBtn.tag = "ic_send"
         }
+    }
+
+    private fun updateAttachments() {
+        val attachment = chat.draft.attachment
+
+        if (attachment == null) {
+            attachmentLayout.visibility = View.GONE
+        }
+        else {
+            attachmentLayout.visibility = View.VISIBLE
+
+            if (attachment.isImage) { // attachmentIsAnImage
+                binding.imageAttachedFile.setImageBitmap(
+                    FileConverter.byteArrayToImage(attachment.bytes))
+            }
+            else {
+                binding.imageAttachedFile.setImageResource(R.drawable.ic_file)
+            }
+
+            binding.textFileName.text = attachment.name
+        }
+
+
     }
 }

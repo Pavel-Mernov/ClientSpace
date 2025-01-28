@@ -4,6 +4,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -63,8 +64,25 @@ class MessagesAdapter(private val messages: List<Message>, private val currentUs
         private val timeTextView: TextView = itemView.findViewById(R.id.timeTextView)
         val messageContainer : LinearLayout = itemView.findViewById(R.id.messageContainer)
         val messageLayout : LinearLayout = itemView.findViewById(R.id.messageLayout)
+        private val attachedImageView : ImageView = itemView.findViewById(R.id.attachedImageView)
 
         fun bind(message: Message) {
+            if (message.attachment == null) {
+                attachedImageView.visibility = View.GONE
+            }
+            else {
+                attachedImageView.visibility = View.VISIBLE
+
+                if (message.attachment!!.isImage) {
+                    val imgBitmap = FileConverter.byteArrayToImage(message.attachment!!.bytes)
+
+                    attachedImageView.setImageBitmap(imgBitmap)
+                }
+                else {
+                    attachedImageView.setImageResource(R.drawable.ic_file)
+                }
+            }
+
             messageTextView.text = message.text
             timeTextView.text = message.time.format(DateTimeFormatter.ofPattern("HH:mm"))
         }

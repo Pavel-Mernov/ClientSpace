@@ -88,10 +88,10 @@ class UserDetailsActivity : AppCompatActivity() {
             val uri = data?.data
 
             if (uri != null) {
-                val byteArray = FileConverter.uriToByteArray(contentResolver, uri)
+                val imgFile = FileConverter.uriToFile(contentResolver, uri)
 
-                if (byteArray != null)  {
-                    user.image = byteArray
+                if (imgFile != null)  {
+                    user.image = imgFile.bytes
                     UserRepository.updateUser(user)
 
                     bind(user)

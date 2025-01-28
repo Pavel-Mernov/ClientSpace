@@ -21,7 +21,7 @@ class ChatLinkAdapter(private val chats: List<Chat>, private val curUserId : Str
         val chat = chats[position]
         holder.bind(chat)
 
-        // Установите обработчик кликов
+        // обработчик кликов
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
             val intent = Intent(context, ChatDetailActivity::class.java).apply {
@@ -54,10 +54,13 @@ class ChatLinkAdapter(private val chats: List<Chat>, private val curUserId : Str
 
             timeTextView.text = DateTimeFormatter.ofPattern("dd MMM yyyy hh:mm").format(lastMessageTime)
 
-            if (chat.draft.text.isEmpty()) {
+            if (chat.draft.text.isEmpty() && chat.draft.attachment == null) {
                 lastMessageTextView.text = if (lastMessageText.length > 30)
                     lastMessageText.substring(0, 27) + "..."
                 else lastMessageText
+            }
+            else if (chat.draft.attachment != null) {
+                lastMessageTextView.text = "Черновик: image."
             }
             else {
                 lastMessageTextView.text = "Черновик: " +

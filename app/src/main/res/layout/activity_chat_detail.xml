@@ -69,6 +69,41 @@
         android:layout_above="@id/messageInputLayout"
         android:padding="8dp" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:visibility="gone"
+        android:id="@+id/attachmentLayout"
+        android:layout_above="@id/messageInputLayout"
+        android:orientation="horizontal"
+        android:padding="5dp">
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
+                android:id="@+id/imageAttachedFile"
+                />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:id="@+id/textFileName"
+                android:layout_gravity="center_vertical"
+                />
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/btnRemoveAttachment"
+                android:src="@drawable/ic_close_black"
+                android:layout_marginEnd="1dp"
+                android:layout_gravity="center_vertical"
+                />
+    </LinearLayout>
+
     <!-- Поле ввода сообщения -->
     <RelativeLayout
         android:id="@+id/messageInputLayout"
@@ -102,7 +137,7 @@
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
-        <!-- Кнопка отправки голосового сообщения -->
+        <!-- Кнопка отправки сообщения -->
         <ImageButton
             android:id="@+id/sendVoiceButton"
             android:layout_width="60dp"
