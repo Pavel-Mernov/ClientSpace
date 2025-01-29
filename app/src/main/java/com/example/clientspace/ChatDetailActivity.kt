@@ -210,6 +210,11 @@ class ChatDetailActivity : AppCompatActivity() {
             }
             else {
                 binding.imageAttachedFile.setImageResource(R.drawable.ic_file)
+
+            }
+
+            binding.imageAttachedFile.setOnClickListener{
+                FileManager.openFile(this, attachment)
             }
 
             binding.textFileName.text = attachment.name

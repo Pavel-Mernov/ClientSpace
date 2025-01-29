@@ -77,9 +77,16 @@ class MessagesAdapter(private val messages: List<Message>, private val currentUs
                     val imgBitmap = FileConverter.byteArrayToImage(message.attachment!!.bytes)
 
                     attachedImageView.setImageBitmap(imgBitmap)
+
                 }
                 else {
                     attachedImageView.setImageResource(R.drawable.ic_file)
+
+
+                }
+
+                attachedImageView.setOnClickListener{
+                    FileManager.openFile(itemView.context, message.attachment!!)
                 }
             }
 
