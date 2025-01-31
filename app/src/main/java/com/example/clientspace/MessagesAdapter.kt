@@ -13,7 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.clientspace.ui.Message
 import java.time.format.DateTimeFormatter
 
-class MessagesAdapter(private val messages: List<Message>, private val currentUserId: String) :
+class MessagesAdapter(private val messages: List<Message>, private val currentUserId: String,
+    private val audioPlayerView: AudioPlayerView) :
     RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
@@ -24,7 +25,7 @@ class MessagesAdapter(private val messages: List<Message>, private val currentUs
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val message = messages[position]
-        holder.bind(message)
+        holder.bind(message, audioPlayerView)
 
         val context = holder.itemView.context
 
@@ -66,11 +67,13 @@ class MessagesAdapter(private val messages: List<Message>, private val currentUs
         val messageLayout : LinearLayout = itemView.findViewById(R.id.messageLayout)
         private val attachedImageView : ImageView = itemView.findViewById(R.id.attachedImageView)
 
-        fun bind(message: Message) {
+        fun bind(message: Message, audioPlayerView: AudioPlayerView) {
             if (message.attachment == null) {
                 attachedImageView.visibility = View.GONE
             }
             else {
+
+
                 attachedImageView.visibility = View.VISIBLE
 
                 if (message.attachment!!.isImage) {
@@ -79,14 +82,21 @@ class MessagesAdapter(private val messages: List<Message>, private val currentUs
                     attachedImageView.setImageBitmap(imgBitmap)
 
                 }
+                else if (message.attachment!!.isAudio) {
+                    attachedImageView.setImageResource(R.drawable.ic_play)
+                }
                 else {
                     attachedImageView.setImageResource(R.drawable.ic_file)
 
 
                 }
 
-                attachedImageView.setOnClickListener{
-                    FileManager.openFile(itemView.context, message.attachment!!)
+                attachedImageView.setOnClickListener {
+                    if (message.attachment!!.isAudio) {
+                        audioPlayerView.setAudioFile(message.attachment!!)
+                    } else {
+                        FileManager.openFile(itemView.context, message.attachment!!)
+                    }
                 }
             }
 

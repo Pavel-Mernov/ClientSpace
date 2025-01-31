@@ -60,12 +60,22 @@
             android:textSize="14sp" />
     </RelativeLayout>
 
+    <com.example.clientspace.AudioPlayerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:id="@+id/audioPlayerView"
+        android:visibility="invisible"
+        android:layout_below="@id/chatHeader"
+        android:layout_centerInParent="true"/>
+
     <!-- Список сообщений -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messagesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_below="@id/chatHeader"
+        android:layout_below="@id/audioPlayerView"
         android:layout_above="@id/messageInputLayout"
         android:padding="8dp" />
 

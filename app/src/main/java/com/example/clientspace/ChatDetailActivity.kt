@@ -30,6 +30,9 @@ class ChatDetailActivity : AppCompatActivity() {
     private val attachmentLayout
         get() = binding.attachmentLayout
 
+    private val audioPlayerView : AudioPlayerView
+        get() = binding.audioPlayerView
+
     private val draft
         get() = chat.draft
 
@@ -93,7 +96,7 @@ class ChatDetailActivity : AppCompatActivity() {
 
 
         // Настройка RecyclerView для сообщений
-        val adapter = MessagesAdapter(messages, curUserId)
+        val adapter = MessagesAdapter(messages, curUserId, audioPlayerView)
         binding.messagesRecyclerView.adapter = adapter
         binding.messagesRecyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -128,7 +131,7 @@ class ChatDetailActivity : AppCompatActivity() {
                 chat.messages.add(newMessage)
                 draft.text = ""
                 draft.attachment = null
-                binding.messagesRecyclerView.adapter = MessagesAdapter(chat.messages, curUserId)
+                binding.messagesRecyclerView.adapter = MessagesAdapter(chat.messages, curUserId, audioPlayerView)
 
                 updateUser()
 
@@ -204,7 +207,10 @@ class ChatDetailActivity : AppCompatActivity() {
         else {
             attachmentLayout.visibility = View.VISIBLE
 
-            if (attachment.isImage) { // attachmentIsAnImage
+            if (attachment.isAudio) {
+                binding.imageAttachedFile.setImageResource(R.drawable.ic_play)
+            }
+            else if (attachment.isImage) { // attachmentIsAnImage
                 binding.imageAttachedFile.setImageBitmap(
                     FileConverter.byteArrayToImage(attachment.bytes))
             }
@@ -214,7 +220,12 @@ class ChatDetailActivity : AppCompatActivity() {
             }
 
             binding.imageAttachedFile.setOnClickListener{
-                FileManager.openFile(this, attachment)
+                if (attachment.isAudio) {
+                    binding.audioPlayerView.setAudioFile(attachment)
+                }
+                else {
+                    FileManager.openFile(this, attachment)
+                }
             }
 
             binding.textFileName.text = attachment.name

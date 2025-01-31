@@ -36,4 +36,5 @@
     <string name="str_access_code">Код доступа:</string>
     <string name="to_messages">К сообщениям</string>
     <string name="create_access_code">Придумайте код доступа</string>
+    <string name="zero_time">00:00</string>
 </resources>
