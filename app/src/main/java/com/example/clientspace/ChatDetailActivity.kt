@@ -1,12 +1,18 @@
 package com.example.clientspace
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.clientspace.databinding.ActivityChatDetailBinding
@@ -15,6 +21,7 @@ import com.example.clientspace.ui.Message
 import com.example.clientspace.ui.User
 import com.example.clientspace.ui.UserRepository
 import java.time.LocalDateTime
+import com.example.clientspace.ui.File as LocalFile
 
 class ChatDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatDetailBinding
@@ -42,13 +49,19 @@ class ChatDetailActivity : AppCompatActivity() {
             draft.attachment = value
         }
 
+    private lateinit var voiceRecorder: VoiceRecorder
+
+    // id of current user
+    private lateinit var curUserId : String
+
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChatDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // Получение данных из Intent
-        val curUserId = intent.getStringExtra("curUserId") ?: run {
+        curUserId = intent.getStringExtra("curUserId") ?: run {
             val exString = "Cannot get curUserId outside extra"
             Log.e("get user", exString)
             throw Exception(exString)
@@ -81,6 +94,9 @@ class ChatDetailActivity : AppCompatActivity() {
         val avatarBytes = chat.avatarImage // Получаем аватар
         val avatarBitmap = FileConverter.byteArrayToImage(avatarBytes)
         val messages = chat.messages // Получаем сообщения
+
+        // initialize voice recorder
+        voiceRecorder = VoiceRecorder(this)
 
         // Отображение данных
         binding.chatUserName.text = chatName // Устанавливаем имя
@@ -126,17 +142,42 @@ class ChatDetailActivity : AppCompatActivity() {
         sendVoiceBtn.setOnClickListener{
             if (sendVoiceBtn.tag == "ic_send") {
                 // Log.e("Send message", "ready to send")
-                val newMessage = Message(curUserId, editMsgText.text.toString(), LocalDateTime.now(), attachment = draft.attachment)
-
-                chat.messages.add(newMessage)
-                draft.text = ""
-                draft.attachment = null
-                binding.messagesRecyclerView.adapter = MessagesAdapter(chat.messages, curUserId, audioPlayerView)
-
-                updateUser()
-
-                editMsgText.text.clear()
+                sendMessage()
             }
+        }
+
+        sendVoiceBtn.setOnTouchListener{ _, event ->
+            if (sendVoiceBtn.tag == "ic_mic") {
+                when (event.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        if (!checkAudioPermission()) {
+                            requestAudioPermission()
+                        } else {
+                            voiceRecorder.startRecording()
+
+                            sendVoiceBtn.setImageResource(R.drawable.ic_record_red)
+                        }
+                    }
+
+                    MotionEvent.ACTION_UP -> {
+                        if (voiceRecorder.isRecording) {
+                            voiceRecorder.stopRecording()
+
+                            val recordedBytes = voiceRecorder.getRecordedBytes()
+                            val textFormat = "audio/wav"
+
+                            val voiceFile = LocalFile("Voice message", recordedBytes, textFormat)
+
+                            attachment = voiceFile
+                            sendMessage()
+                        }
+                    }
+                }
+            }
+            else { // if icon is to send
+                sendMessage()
+            }
+            true
         }
 
         val btnAttach : ImageButton = binding.attachButton
@@ -164,6 +205,19 @@ class ChatDetailActivity : AppCompatActivity() {
                 handleFile(fileUri)
             }
         }
+    }
+
+    private fun sendMessage() {
+        val newMessage = Message(curUserId, binding.messageEditText.text.toString(), LocalDateTime.now(), attachment = draft.attachment)
+
+        chat.messages.add(newMessage)
+        draft.text = ""
+        draft.attachment = null
+        binding.messagesRecyclerView.adapter = MessagesAdapter(chat.messages, curUserId, audioPlayerView)
+
+        updateUser()
+
+        binding.messageEditText.text.clear()
     }
 
     private fun handleFile(uri: Uri) {
@@ -236,5 +290,17 @@ class ChatDetailActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    private fun checkAudioPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestAudioPermission() {
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_RECORD_AUDIO_PERMISSION)
+    }
+
+    companion object {
+        private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
     }
 }
