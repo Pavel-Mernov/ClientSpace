@@ -66,6 +66,7 @@ class MessagesAdapter(private val messages: List<Message>, private val currentUs
         val messageContainer : LinearLayout = itemView.findViewById(R.id.messageContainer)
         val messageLayout : LinearLayout = itemView.findViewById(R.id.messageLayout)
         private val attachedImageView : ImageView = itemView.findViewById(R.id.attachedImageView)
+        private val fileNameTextView : TextView = itemView.findViewById(R.id.fileNameTextView)
 
         fun bind(message: Message, audioPlayerView: AudioPlayerView) {
             if (message.attachment == null) {
@@ -98,6 +99,11 @@ class MessagesAdapter(private val messages: List<Message>, private val currentUs
                         FileManager.openFile(itemView.context, message.attachment!!)
                     }
                 }
+
+                fileNameTextView.text = if (message.attachment!!.name.length >= 35)
+                    message.attachment!!.name.substring(0, 32) + "..."
+                    else
+                        message.attachment!!.name
             }
 
             messageTextView.text = message.text

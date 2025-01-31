@@ -31,6 +31,8 @@ object FileConverter {
 
             val fileName = getFileName(contentResolver, uri)
 
+            // Log.e("file name", fileName ?: "not found")
+
             File(fileName ?: "", byteArrayOutputStream.toByteArray(), mimeType ?: "")
 
         } catch (e : Exception) {

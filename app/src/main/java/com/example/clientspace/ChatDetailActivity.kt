@@ -228,7 +228,11 @@ class ChatDetailActivity : AppCompatActivity() {
                 }
             }
 
-            binding.textFileName.text = attachment.name
+            // Log.e("file name", attachment.name)
+            binding.textFileName.text = if (attachment.name.length >= 29)
+                attachment.name.substring(0, 26) + "..."
+                else
+                    attachment.name
         }
 
 
