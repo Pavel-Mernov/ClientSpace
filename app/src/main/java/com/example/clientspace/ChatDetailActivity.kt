@@ -20,6 +20,7 @@ import com.example.clientspace.ui.Chat
 import com.example.clientspace.ui.Message
 import com.example.clientspace.ui.User
 import com.example.clientspace.ui.UserRepository
+import java.io.IOException
 import java.time.LocalDateTime
 import com.example.clientspace.ui.File as LocalFile
 
@@ -54,6 +55,8 @@ class ChatDetailActivity : AppCompatActivity() {
     // id of current user
     private lateinit var curUserId : String
 
+    private var chatId : Int = -1
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +72,7 @@ class ChatDetailActivity : AppCompatActivity() {
 
         // Log.e("cur user id", curUserId)
 
-        val chatId = intent.getIntExtra("chatId", -1)
+        chatId = intent.getIntExtra("chatId", -1)
         if (chatId == -1) {
             val exString = "Cannot get chat Id outside extra"
             Log.e("chat Id", exString)
@@ -105,14 +108,18 @@ class ChatDetailActivity : AppCompatActivity() {
         val btnBack = binding.backButton
 
         btnBack.setOnClickListener {
-
-            finish()
+            try {
+                finish()
+            }
+            catch (e : Throwable) {
+                Log.e("chat empty", e.message ?: "some error")
+            }
         }
 
 
 
         // Настройка RecyclerView для сообщений
-        val adapter = MessagesAdapter(messages, curUserId, audioPlayerView)
+        val adapter = MessagesAdapter(chat.messages, curUserId, audioPlayerView)
         binding.messagesRecyclerView.adapter = adapter
         binding.messagesRecyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -229,8 +236,6 @@ class ChatDetailActivity : AppCompatActivity() {
             updateUser()
         }
     }
-
-
 
     private fun updateUser() {
 

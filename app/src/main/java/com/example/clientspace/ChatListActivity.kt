@@ -125,9 +125,10 @@ class ChatListActivity : AppCompatActivity() {
     }
 
     override fun onResume() {
-        super.onResume()
+
 
         // if we were searching certain chats, than we should display only filtered chats
+        super.onResume()
         bind(displayChats)
     }
 }

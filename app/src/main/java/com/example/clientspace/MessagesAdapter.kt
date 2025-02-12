@@ -6,16 +6,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.clientspace.ui.Chat
 
 import com.example.clientspace.ui.Message
+import com.example.clientspace.ui.User
+import com.example.clientspace.ui.UserRepository
 import java.time.format.DateTimeFormatter
 
-class MessagesAdapter(private val messages: List<Message>, private val currentUserId: String,
-    private val audioPlayerView: AudioPlayerView) :
-    RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>() {
+class MessagesAdapter(private val messages: MutableList<Message>, private val userId : String,
+    private val audioPlayerView: AudioPlayerView,
+    ) :
+        RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>() {
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         val layout = R.layout.item_message
@@ -48,12 +54,36 @@ class MessagesAdapter(private val messages: List<Message>, private val currentUs
         }
 
         holder.messageLayout.background = ContextCompat.getDrawable(context, resId)
+
+        holder.itemView.setOnClickListener{ view ->
+            val popupMenu = PopupMenu(holder.itemView.context, view)
+
+            popupMenu.menuInflater.inflate(R.menu.message_menu, popupMenu.menu)
+
+            popupMenu.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.action_delete -> {
+                        deleteItemAt(position)
+                        true
+                    }
+                    else -> false
+                }
+            }
+
+            popupMenu.show()
+        }
+    }
+
+    private fun deleteItemAt(position: Int) {
+        messages.removeAt(position)
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, messages.size)
     }
 
     override fun getItemCount(): Int = messages.size
 
     override fun getItemViewType(position: Int): Int {
-        return if (messages[position].fromId == currentUserId) {
+        return if (messages[position].fromId == userId) {
             VIEW_TYPE_SENT
         } else {
             VIEW_TYPE_RECEIVED
