@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -27,6 +28,12 @@ import com.example.clientspace.ui.File as LocalFile
 class ChatDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChatDetailBinding
 
+    private var adapter : MessagesAdapter
+        get() = binding.messagesRecyclerView.adapter as MessagesAdapter
+        set(value) {
+            binding.messagesRecyclerView.adapter = value
+        }
+
     private val REQUEST_CODE_PICK_FILE = 100
 
     private lateinit var user : User
@@ -43,6 +50,8 @@ class ChatDetailActivity : AppCompatActivity() {
 
     private val draft
         get() = chat.draft
+
+    private var editMessageId : Int = -1 // default, none of the messages is being edited
 
     private var attachment
         get() = draft.attachment
@@ -119,8 +128,12 @@ class ChatDetailActivity : AppCompatActivity() {
 
 
         // Настройка RecyclerView для сообщений
-        val adapter = MessagesAdapter(chat.messages, curUserId, audioPlayerView)
-        binding.messagesRecyclerView.adapter = adapter
+        val messagesAdapter = MessagesAdapter(chat.messages, curUserId, audioPlayerView) {
+            startEditMessage(
+                it
+            )
+        }
+        adapter = messagesAdapter
         binding.messagesRecyclerView.layoutManager = LinearLayoutManager(this)
 
 
@@ -193,6 +206,22 @@ class ChatDetailActivity : AppCompatActivity() {
         }
     }
 
+    private fun startEditMessage(position : Int) {
+        val messageToEdit = chat.messages[position]
+        draft.text = messageToEdit.text
+
+        editMessageId = position
+
+        binding.messageEditText.setText(draft.text)
+
+
+        draft.attachment = messageToEdit.attachment
+        draft.time = messageToEdit.time
+        draft.isEdited = true
+
+        updateUser()
+    }
+
     private fun openFilePicker() {
         val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
             type = "*/*" // Укажите тип файла, например "image/*" для изображений или "*/*" для всех файлов
@@ -215,12 +244,30 @@ class ChatDetailActivity : AppCompatActivity() {
     }
 
     private fun sendMessage() {
-        val newMessage = Message(curUserId, binding.messageEditText.text.toString(), LocalDateTime.now(), attachment = draft.attachment)
+        if (draft.isEdited) {
+            // removing old message
+            chat.messages.removeAt(editMessageId)
+
+            // adapter.notifyItemRemoved(editMessageId)
+            // adapter.notifyItemRangeChanged(editMessageId, chat.messages.size)
+        }
+
+        val newMessage = Message(
+            curUserId,
+            binding.messageEditText.text.toString(),
+            if (draft.isEdited) draft.time else LocalDateTime.now(),
+            isEdited = draft.isEdited,
+            attachment = draft.attachment)
 
         chat.messages.add(newMessage)
         draft.text = ""
         draft.attachment = null
-        binding.messagesRecyclerView.adapter = MessagesAdapter(chat.messages, curUserId, audioPlayerView)
+        draft.isEdited = false
+        adapter = MessagesAdapter(chat.messages, curUserId, audioPlayerView) {
+            startEditMessage(
+                it
+            )
+        }
 
         updateUser()
 

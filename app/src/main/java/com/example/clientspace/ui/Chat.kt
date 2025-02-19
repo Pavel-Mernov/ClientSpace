@@ -11,6 +11,8 @@ data class Chat(
     val avatarImage: ByteArray,  // Avatar source
     val name: String,      // User name
     val messages: MutableList<Message>,
+    val isForTwo: Boolean, // if chat can be only for two
+    val otherMembers: MutableList<String>, // list of other user ids
     var draft: Message = Message("", "", LocalDateTime.now()), // last draft message
 
 ) : Parcelable {

@@ -10,15 +10,12 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.clientspace.ui.Chat
 
 import com.example.clientspace.ui.Message
-import com.example.clientspace.ui.User
-import com.example.clientspace.ui.UserRepository
 import java.time.format.DateTimeFormatter
 
 class MessagesAdapter(private val messages: MutableList<Message>, private val userId : String,
-    private val audioPlayerView: AudioPlayerView,
+    private val audioPlayerView: AudioPlayerView, private val startEditMessage : (Int) -> Unit
     ) :
         RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>() {
 
@@ -58,12 +55,21 @@ class MessagesAdapter(private val messages: MutableList<Message>, private val us
         holder.itemView.setOnClickListener{ view ->
             val popupMenu = PopupMenu(holder.itemView.context, view)
 
-            popupMenu.menuInflater.inflate(R.menu.message_menu, popupMenu.menu)
+            if (message.fromId == userId) {
+                popupMenu.menuInflater.inflate(R.menu.message_menu_from_user, popupMenu.menu)
+            }
+            else {
+                popupMenu.menuInflater.inflate(R.menu.message_menu_from_other, popupMenu.menu)
+            }
 
             popupMenu.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.action_delete -> {
                         deleteItemAt(position)
+                        true
+                    }
+                    R.id.action_edit -> {
+                        startEditMessage(position)
                         true
                     }
                     else -> false
@@ -79,6 +85,7 @@ class MessagesAdapter(private val messages: MutableList<Message>, private val us
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, messages.size)
     }
+
 
     override fun getItemCount(): Int = messages.size
 

@@ -28,6 +28,10 @@ object UserRepository {
                         chatId = 0,
                         avatarImage = getImageBytes(R.drawable.ic_avatar1, context),
                         name = "Сергей Виденин",
+                        isForTwo = true,
+                        otherMembers = listOf(
+                            "sergey_videnin"
+                        ).toMutableList(),
                         messages = listOf(
                             Message(
                                 fromId = defaultUserId,
@@ -40,6 +44,10 @@ object UserRepository {
                         chatId = 1,
                         avatarImage = getImageBytes(R.drawable.ic_avatar2, context),
                         name = "Алексей Сурков",
+                        isForTwo = true,
+                        otherMembers = listOf(
+                            "alex_surkov"
+                        ).toMutableList(),
                         messages = listOf(
                             Message(
                                 fromId = defaultUserId,
@@ -52,6 +60,10 @@ object UserRepository {
                         chatId = 2,
                         avatarImage = getImageBytes(R.drawable.ic_avatar3, context),
                         name = "Иван Давыдов",
+                        isForTwo = true,
+                        otherMembers = listOf(
+                            "ivan_davydov"
+                        ).toMutableList(),
                         messages = listOf(
                             Message(
                                 fromId = defaultUserId,
@@ -64,6 +76,10 @@ object UserRepository {
                         chatId = 3,
                         avatarImage = getImageBytes(R.drawable.ic_avatar4, context),
                         name = "Полина Дроздова",
+                        isForTwo = true,
+                        otherMembers = listOf(
+                            "p_drozdova"
+                        ).toMutableList(),
                         messages = listOf(
                             Message(
                                 fromId = "p_drozdova",
@@ -76,6 +92,8 @@ object UserRepository {
                         chatId = 4,
                         avatarImage = getImageBytes(R.drawable.ic_avatar5, context),
                         name = "Георгий Смирнов",
+                        isForTwo = true,
+                        otherMembers = listOf("george_smirnov").toMutableList(),
                         messages = listOf(
                             Message(
                                 fromId = defaultUserId,
