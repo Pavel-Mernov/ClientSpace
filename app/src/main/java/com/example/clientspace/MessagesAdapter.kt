@@ -1,5 +1,7 @@
 package com.example.clientspace
 
+import android.content.Context
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -12,27 +14,33 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 
 import com.example.clientspace.ui.Message
+import com.example.clientspace.ui.Reaction
+import kotlinx.coroutines.selects.whileSelect
 import java.time.format.DateTimeFormatter
 
 class MessagesAdapter(private val messages: MutableList<Message>, private val userId : String,
-    private val audioPlayerView: AudioPlayerView, private val startEditMessage : (Int) -> Unit
-    ) :
-        RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>() {
+    private val audioPlayerView: AudioPlayerView, private val startEditMessage : (Int) -> Unit,
+    private val inflateReactionMenuAt : (Int) -> Unit, private val onDismiss : () -> Unit,
+    private val updateUser : () -> Unit)
+    : RecyclerView.Adapter<MessagesAdapter.MessageViewHolder>() {
 
+        private lateinit var popupMenu : PopupMenu
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         val layout = R.layout.item_message
         val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
-        return MessageViewHolder(view)
+        return MessageViewHolder(view, this, updateUser)
     }
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         val message = messages[position]
-        holder.bind(message, audioPlayerView)
+        holder.bind(message, position, audioPlayerView)
 
         val context = holder.itemView.context
 
         val resId: Int
+
+
 
         // Стилизация для отправленных и полученных сообщений
         val layoutParams = holder.messageContainer.layoutParams as ViewGroup.MarginLayoutParams
@@ -53,13 +61,20 @@ class MessagesAdapter(private val messages: MutableList<Message>, private val us
         holder.messageLayout.background = ContextCompat.getDrawable(context, resId)
 
         holder.itemView.setOnClickListener{ view ->
-            val popupMenu = PopupMenu(holder.itemView.context, view)
+            popupMenu = PopupMenu(holder.itemView.context, view)
+
+            // inflateReactionMenuAt(position) // restoring layout to set reaction
 
             if (message.fromId == userId) {
                 popupMenu.menuInflater.inflate(R.menu.message_menu_from_user, popupMenu.menu)
             }
             else {
                 popupMenu.menuInflater.inflate(R.menu.message_menu_from_other, popupMenu.menu)
+            }
+
+
+            popupMenu.setOnDismissListener {
+                onDismiss()
             }
 
             popupMenu.setOnMenuItemClickListener { item ->
@@ -72,6 +87,13 @@ class MessagesAdapter(private val messages: MutableList<Message>, private val us
                         startEditMessage(position)
                         true
                     }
+
+                    R.id.action_react -> {
+                        popupMenu.dismiss()
+                        inflateReactionMenuAt(position)
+                        true
+                    }
+
                     else -> false
                 }
             }
@@ -86,6 +108,9 @@ class MessagesAdapter(private val messages: MutableList<Message>, private val us
         notifyItemRangeChanged(position, messages.size)
     }
 
+    fun dismissMenu() {
+        popupMenu.dismiss()
+    }
 
     override fun getItemCount(): Int = messages.size
 
@@ -97,15 +122,16 @@ class MessagesAdapter(private val messages: MutableList<Message>, private val us
         }
     }
 
-    inner class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class MessageViewHolder(itemView: View, private val adapter: MessagesAdapter, private val updateUser : () -> Unit) : RecyclerView.ViewHolder(itemView) {
         private val messageTextView: TextView = itemView.findViewById(R.id.messageTextView)
         private val timeTextView: TextView = itemView.findViewById(R.id.timeTextView)
         val messageContainer : LinearLayout = itemView.findViewById(R.id.messageContainer)
         val messageLayout : LinearLayout = itemView.findViewById(R.id.messageLayout)
         private val attachedImageView : ImageView = itemView.findViewById(R.id.attachedImageView)
         private val fileNameTextView : TextView = itemView.findViewById(R.id.fileNameTextView)
+        private val reactionImageView : ImageView = itemView.findViewById(R.id.reactionImageView)
 
-        fun bind(message: Message, audioPlayerView: AudioPlayerView) {
+        fun bind(message: Message, position : Int, audioPlayerView: AudioPlayerView) {
             if (message.attachment == null) {
                 attachedImageView.visibility = View.GONE
             }
@@ -143,6 +169,34 @@ class MessagesAdapter(private val messages: MutableList<Message>, private val us
                         message.attachment!!.name
             }
 
+            if (message.reaction == null) {
+                reactionImageView.visibility = View.GONE
+            }
+            else {
+                val resourceId = when(message.reaction) {
+                    (Reaction.LIKE) -> R.drawable.ic_like
+                    (Reaction.DISLIKE) -> R.drawable.ic_dislike
+                    (Reaction.LOVE) -> R.drawable.ic_heart
+                    (Reaction.FIRE) -> R.drawable.ic_fire
+                    (Reaction.SAD) -> R.drawable.ic_sad
+                    else -> 0
+                }
+
+                // Log.d("reaction", message.reaction.toString())
+
+                reactionImageView.visibility = View.VISIBLE
+                reactionImageView.setImageResource(resourceId)
+
+                reactionImageView.setOnClickListener {
+                    message.reaction = null
+                    adapter.notifyItemChanged(position)
+                    updateUser()
+                }
+            }
+
+
+
+            // Log.d("reaction", message.text + " " +message.reaction.toString())
             messageTextView.text = message.text
             timeTextView.text = message.time.format(DateTimeFormatter.ofPattern("HH:mm"))
         }

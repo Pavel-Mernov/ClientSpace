@@ -10,5 +10,6 @@ data class Message(
     var text : String,
     var time : LocalDateTime,
     var isEdited : Boolean = false, // is message edited, default false
-    var attachment : File? = null // attached file
+    var attachment : File? = null, // attached file
+    var reaction : Reaction? = null, // reaction to the message
 ) : Parcelable

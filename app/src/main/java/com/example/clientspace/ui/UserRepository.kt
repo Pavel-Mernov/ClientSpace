@@ -84,6 +84,7 @@ object UserRepository {
                             Message(
                                 fromId = "p_drozdova",
                                 text = "Мне нужен синий фон",
+                                reaction = Reaction.LIKE,
                                 time = LocalDateTime.now().minusHours(3).minusMinutes(20)
                             )
                         ).toMutableList()

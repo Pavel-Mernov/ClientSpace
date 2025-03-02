@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.clientspace.databinding.ActivityChatDetailBinding
 import com.example.clientspace.ui.Chat
 import com.example.clientspace.ui.Message
+import com.example.clientspace.ui.Reaction
 import com.example.clientspace.ui.User
 import com.example.clientspace.ui.UserRepository
 import java.io.IOException
@@ -65,6 +66,8 @@ class ChatDetailActivity : AppCompatActivity() {
     private lateinit var curUserId : String
 
     private var chatId : Int = -1
+
+    private var inflatedMessagePosition = -1
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -128,12 +131,7 @@ class ChatDetailActivity : AppCompatActivity() {
 
 
         // Настройка RecyclerView для сообщений
-        val messagesAdapter = MessagesAdapter(chat.messages, curUserId, audioPlayerView) {
-            startEditMessage(
-                it
-            )
-        }
-        adapter = messagesAdapter
+        initializeAdapter()
         binding.messagesRecyclerView.layoutManager = LinearLayoutManager(this)
 
 
@@ -204,6 +202,55 @@ class ChatDetailActivity : AppCompatActivity() {
         btnAttach.setOnClickListener{
             openFilePicker()
         }
+
+        binding.imgRemoveReaction.setOnClickListener{
+            closeReactionLayout()
+        }
+
+        binding.imgLike.setOnClickListener{
+            val message = chat.messages[inflatedMessagePosition]
+
+            message.reaction = Reaction.LIKE
+            updateUser()
+            closeReactionLayout()
+            adapter.notifyItemChanged(inflatedMessagePosition)
+        }
+        binding.imgSad.setOnClickListener{
+            val message = chat.messages[inflatedMessagePosition]
+
+            message.reaction = Reaction.SAD
+            updateUser()
+            closeReactionLayout()
+            adapter.notifyItemChanged(inflatedMessagePosition)
+        }
+        binding.imgDislike.setOnClickListener{
+            val message = chat.messages[inflatedMessagePosition]
+
+            message.reaction = Reaction.DISLIKE
+            updateUser()
+            closeReactionLayout()
+            adapter.notifyItemChanged(inflatedMessagePosition)
+        }
+        binding.imgFire.setOnClickListener{
+            val message = chat.messages[inflatedMessagePosition]
+
+            message.reaction = Reaction.FIRE
+            updateUser()
+            closeReactionLayout()
+            adapter.notifyItemChanged(inflatedMessagePosition)
+        }
+        binding.imgLove.setOnClickListener{
+
+            val message = chat.messages[inflatedMessagePosition]
+
+            message.reaction = Reaction.LOVE
+            updateUser()
+            closeReactionLayout()
+            adapter.notifyItemChanged(inflatedMessagePosition)
+
+
+            // Log.d("reaction", message.text + " set to LOVE")
+        }
     }
 
     private fun startEditMessage(position : Int) {
@@ -263,15 +310,19 @@ class ChatDetailActivity : AppCompatActivity() {
         draft.text = ""
         draft.attachment = null
         draft.isEdited = false
-        adapter = MessagesAdapter(chat.messages, curUserId, audioPlayerView) {
-            startEditMessage(
-                it
-            )
-        }
+        initializeAdapter()
 
         updateUser()
 
         binding.messageEditText.text.clear()
+    }
+
+    private fun inflateReactMenuAt(position : Int) {
+        binding.reactionLayout.visibility = View.VISIBLE
+
+
+        inflatedMessagePosition = position
+        Log.d("reaction", "Inflated at position: " + position)
     }
 
     private fun handleFile(uri: Uri) {
@@ -293,6 +344,11 @@ class ChatDetailActivity : AppCompatActivity() {
         UserRepository.updateUser(user)
     }
 
+    private fun closeReactionLayout() {
+
+        binding.reactionLayout.visibility = View.GONE
+    }
+
     private fun updateSendIcon() {
         if (chat.draft.text.isBlank() && chat.draft.attachment == null) {
             sendVoiceBtn.setImageResource(R.drawable.ic_mic)
@@ -302,6 +358,11 @@ class ChatDetailActivity : AppCompatActivity() {
             sendVoiceBtn.setImageResource(R.drawable.ic_send)
             sendVoiceBtn.tag = "ic_send"
         }
+    }
+
+    private fun initializeAdapter() {
+        adapter = MessagesAdapter(chat.messages, curUserId, audioPlayerView,
+           startEditMessage = { startEditMessage(it) }, inflateReactionMenuAt = { inflateReactMenuAt(it) }, onDismiss = { closeReactionLayout() }, updateUser = { updateUser() })
     }
 
     private fun updateAttachments() {

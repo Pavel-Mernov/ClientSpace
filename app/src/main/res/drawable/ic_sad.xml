@@ -1,0 +1,29 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Лицо (жёлтое круг) -->
+    <path
+        android:fillColor="#FFEB3B"
+        android:pathData="M12,2C6.48,2 2,6.48 2,12C2,17.52 6.48,22 12,22C17.52,22 22,17.52 22,12C22,6.48 17.52,2 12,2Z" />
+
+    <!-- Глаза (чёрные круги) -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M8,10C8.55,10 9,10.45 9,11C9,11.55 8.55,12 8,12C7.45,12 7,11.55 7,11C7,10.45 7.45,10 8,10Z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M16,10C16.55,10 17,10.45 17,11C17,11.55 16.55,12 16,12C15.45,12 15,11.55 15,11C15,10.45 15.45,10 16,10Z" />
+
+    <!-- Грустная улыбка (дуга вверх) -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M8,16C9,14 15,14 16,16" />
+
+    <!-- Слеза (большая синяя капля) -->
+    <path
+        android:fillColor="#2196F3"
+        android:pathData="M9,12C8.2,13.5 9,15 9.8,15.5C10.6,16 11.4,15 11,14C10.6,13.5 9.8,13 9,12Z" />
+</vector>

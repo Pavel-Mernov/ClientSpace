@@ -1,0 +1,31 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Основное пламя (красно-оранжевый контур) -->
+    <path
+        android:fillColor="#FF5722"
+        android:pathData="M12,2C9,5 7,8 7,11C7,14 9,16 12,16C15,16 17,14 17,11C17,8 15,5 12,2Z" />
+
+    <!-- Левый язык пламени (увеличенный) -->
+    <path
+        android:fillColor="#FF6F00"
+        android:pathData="M8,6C7,8 6,9 6,11C6,12.5 7,13.5 8,13.5C8.5,12.5 7.5,11.5 7.5,10.5C7.5,9.5 8,8 8,6Z" />
+
+    <!-- Правый язык пламени (увеличенный) -->
+    <path
+        android:fillColor="#FF6F00"
+        android:pathData="M16,6C17,8 18,9 18,11C18,12.5 17,13.5 16,13.5C15.5,12.5 16.5,11.5 16.5,10.5C16.5,9.5 16,8 16,6Z" />
+
+    <!-- Внутреннее пламя (увеличенное, жёлтое) -->
+    <path
+        android:fillColor="#FFC107"
+        android:pathData="M12,6C10.5,7.5 9,9 9,12C9,13.5 10.5,15 12,15C13.5,15 15,13.5 15,12C15,9 13.5,7.5 12,6Z" />
+
+    <!-- Внутреннее свечение (увеличенное, белое) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,9C11,10 10,11 10,12.5C10,13.5 11,14.5 12,14.5C13,14.5 14,13.5 14,12.5C14,11 13,10 12,9Z" />
+</vector>
