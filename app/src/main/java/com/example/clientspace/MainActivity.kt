@@ -26,17 +26,18 @@ class MainActivity : ComponentActivity() {
         // Init user repository
         UserRepository.initialize(this)
 
-        // Default User Id
-        val userId = UserRepository.defaultUserId
+
 
         // Getting Default user
-        val user = UserRepository.findUserById(userId)
+        val user = UserRepository.getCurrentUser()
 
         if (user == null) {
             val exString = "user not found"
             Log.e("user", exString)
             throw Exception(exString)
         }
+
+        val userId = user.userId
 
         // Find all points
         val circles = listOf(
@@ -87,7 +88,7 @@ class MainActivity : ComponentActivity() {
                 if (inputDigits.size == maxInputLength) {
 
 
-                    if (user.enterCode == String(inputDigits.toCharArray())) {
+                    if (user.enterCode.contentEquals(String(inputDigits.toCharArray()).toByteArray())) {
                         val intent = Intent(this, ChatListActivity::class.java).apply {
                             putExtra("curUserId", userId)
                         }

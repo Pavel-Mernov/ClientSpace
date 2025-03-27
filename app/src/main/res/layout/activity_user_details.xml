@@ -72,6 +72,7 @@
         />
 
     <LinearLayout
+        android:id="@+id/layoutAccessCode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -131,7 +132,7 @@
         android:paddingVertical="4dp" />
 
     <Button
-        android:id="@+id/btnToMessages"
+        android:id="@+id/btnBackToMessages"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/to_messages"

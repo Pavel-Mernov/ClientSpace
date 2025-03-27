@@ -7,10 +7,11 @@ import kotlinx.parcelize.Parcelize
 data class User(
     var userId : String,
     var image : ByteArray,
-    var enterCode : String,
+    var enterCode : ByteArray? = null,
     var userName : String,
-    var description : String?,
-    val chats : MutableList<Chat>
+    var description : String = "",
+    var isCurrent : Boolean = false,
+    val chats : MutableList<Chat> = emptyList<Chat>().toMutableList()
 ) : Parcelable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

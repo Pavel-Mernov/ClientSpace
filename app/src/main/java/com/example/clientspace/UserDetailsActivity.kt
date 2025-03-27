@@ -3,8 +3,10 @@ package com.example.clientspace
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.clientspace.ui.User
@@ -26,8 +28,12 @@ class UserDetailsActivity : AppCompatActivity() {
         get() = findViewById(R.id.btnEditCode)
     private val btnEditImage: Button
         get() = findViewById(R.id.btnEditImage)
-    private val btnToMessages: Button
-        get() = findViewById(R.id.btnToMessages)
+    private val btnBackToMessages: Button
+        get() = findViewById(R.id.btnBackToMessages)
+    private val tvAccessCode: TextView
+        get() = findViewById(R.id.tvAccessCode)
+    private val layoutAccessCode: LinearLayout
+        get() = findViewById(R.id.layoutAccessCode)
 
     private lateinit var user : User
 
@@ -38,7 +44,7 @@ class UserDetailsActivity : AppCompatActivity() {
         // Получаем переданный объект UserId из Intent
         val userId = intent.getStringExtra("userId") ?: throw Exception("No user Id passed")
         user = UserRepository.findUserById(userId) ?: run {
-            val exString = "User not given"
+            val exString = "User not found"
             Log.e("Show user", exString)
             throw Exception(exString)
 
@@ -46,31 +52,43 @@ class UserDetailsActivity : AppCompatActivity() {
 
         bind(user)
 
-        btnEditCode.setOnClickListener{
-            // trying to set new enter code
-            val intent = Intent(this, EditCodeActivity::class.java).apply {
-                putExtra("userId", userId)
-            }
-            startActivity(intent)
-        }
-
-        btnEditImage.setOnClickListener{
-            openGallery()
-        }
-
-        btnToMessages.setOnClickListener{
+        btnBackToMessages.setOnClickListener{
             // finish activity and go to messages
             finish()
         }
 
+        if (!user.isCurrent) {
+            btnEditCode.visibility = View.GONE
+            btnEditImage.visibility = View.GONE
+            tvAccessCode.visibility = View.GONE
+            layoutAccessCode.visibility = View.GONE
 
+            return
+        }
+            // btnEditCode.visibility = View.VISIBLE
+
+            btnEditCode.setOnClickListener{
+                // trying to set new enter code
+                val intent = Intent(this, EditCodeActivity::class.java).apply {
+                    putExtra("userId", userId)
+                }
+                startActivity(intent)
+            }
+
+            // btnEditImage.visibility = View.VISIBLE
+
+            btnEditImage.setOnClickListener{
+                openGallery()
+            }
     }
 
     private fun bind(user : User) {
 
         userImage.setImageBitmap(FileConverter.byteArrayToImage(user.image))
         userNameText.text = user.userName
-        userDescriptionText.text = user.description ?: "No description available"
+        userDescriptionText.text =
+            user.description.ifBlank { "" }
+
         userIdText.text = "@${user.userId}"
     }
 

@@ -5,7 +5,7 @@ import com.example.clientspace.R
 import java.time.LocalDateTime
 
 object UserRepository {
-    const val defaultUserId = "pavel_mernov"
+    private const val currentUserId = "pavel_mernov"
 
     private fun getImageBytes(resId : Int, context : Context) : ByteArray {
         val inputStream = context.resources.openRawResource(resId)
@@ -18,11 +18,40 @@ object UserRepository {
     fun initialize(context : Context) {
         defaultUsers = listOf(
             User(
-                defaultUserId,
+                "p_drozdova",
+                getImageBytes(R.drawable.ic_avatar4, context),
+                userName = "Полина Дроздова",
+                description = "Графический дизайнер. Котики моё всё:)"
+            ),
+            User(
+                "sergey_videnin",
+                getImageBytes(R.drawable.ic_avatar1, context),
+                userName = "Сергей Виденин",
+            ),
+            User(
+                "ivan_davydov",
+                getImageBytes(R.drawable.ic_avatar3, context),
+                userName = "Иван Давыдов",
+                description = "Всем привет. Меня зовут Иван Давыдов. Я учусь в НИУ ВШЭ"
+            ),
+            User(
+                "alex_surkov",
+                getImageBytes(R.drawable.ic_avatar2, context),
+                userName = "Алексей Сурков",
+                description = "Студент ФКН ПИ ВШЭ"
+            ),
+            User(
+                "george_smirnov",
+                getImageBytes(R.drawable.ic_avatar5, context),
+                userName = "Георгий Смирнов",
+            ),
+            User(
+                currentUserId,
                 getImageBytes(R.drawable.ic_avatar_main, context),
-                "012345",
-                "Pavel Mernov",
+                "012345".toByteArray(),
+                "Павел Мернов",
                 "Hello, my name is Pavel Mernov",
+                isCurrent = true,
                 listOf(
                     Chat(
                         chatId = 0,
@@ -34,7 +63,7 @@ object UserRepository {
                         ).toMutableList(),
                         messages = listOf(
                             Message(
-                                fromId = defaultUserId,
+                                fromId = currentUserId,
                                 text = "Здравствуйте, Сергей!",
                                 time = LocalDateTime.now().minusMinutes(10)
                             )
@@ -50,7 +79,7 @@ object UserRepository {
                         ).toMutableList(),
                         messages = listOf(
                             Message(
-                                fromId = defaultUserId,
+                                fromId = currentUserId,
                                 text = "Ну что, решили задачу?",
                                 time = LocalDateTime.now().minusMinutes(45)
                             )
@@ -66,7 +95,7 @@ object UserRepository {
                         ).toMutableList(),
                         messages = listOf(
                             Message(
-                                fromId = defaultUserId,
+                                fromId = currentUserId,
                                 text = "Как ваша отладка сервера?",
                                 time = LocalDateTime.now().minusHours(2)
                             )
@@ -97,7 +126,7 @@ object UserRepository {
                         otherMembers = listOf("george_smirnov").toMutableList(),
                         messages = listOf(
                             Message(
-                                fromId = defaultUserId,
+                                fromId = currentUserId,
                                 text = "Помогите, мне сложно!",
                                 time = LocalDateTime.now().minusHours(4).minusMinutes(30)
                             )
@@ -113,6 +142,10 @@ object UserRepository {
         return defaultUsers.first()
     }
      */
+
+    fun getCurrentUser() : User? {
+        return findUserById(currentUserId)
+    }
 
     fun findUserById(id : String) : User? {
         return defaultUsers.firstOrNull { it.userId == id }

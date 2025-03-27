@@ -144,6 +144,14 @@ class ChatDetailActivity : AppCompatActivity() {
         updateAttachments()
         updateSendIcon()
 
+        binding.chatAvatar.setOnClickListener{
+            goToChatView()
+        }
+
+        binding.chatUserName.setOnClickListener{
+            goToChatView()
+        }
+
         binding.btnRemoveAttachment.setOnClickListener{
             attachment = null // remove attachment
             updateUser()
@@ -411,6 +419,29 @@ class ChatDetailActivity : AppCompatActivity() {
 
     private fun requestAudioPermission() {
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_RECORD_AUDIO_PERMISSION)
+    }
+
+    private fun goToChatView() {
+        if (chat.isForTwo) {
+            val otherUserId = chat.otherMembers.firstOrNull()
+
+            goToUserView(otherUserId)
+        }
+    }
+
+    private fun goToUserView(userId : String?) {
+        if (userId == null) {
+            return
+        }
+
+        // val userId = intent.getStringExtra("userId") ?: throw Exception("No user Id passed")
+        val otherUser = UserRepository.findUserById(userId) ?: return
+
+        val gotoUserIntent = Intent(this, UserDetailsActivity::class.java).apply {
+            putExtra("userId", userId)
+        }
+
+        startActivity(gotoUserIntent)
     }
 
     companion object {

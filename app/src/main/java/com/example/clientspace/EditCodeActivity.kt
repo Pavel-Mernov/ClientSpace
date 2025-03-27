@@ -106,7 +106,7 @@ class EditCodeActivity : AppCompatActivity() {
                     }
                     else if (String(savedCode.toCharArray()) == String(enteredCode.toCharArray())) {
                         // saving user new enter code
-                        user.enterCode = String(enteredCode.toCharArray())
+                        user.enterCode = String(enteredCode.toCharArray()).toByteArray()
                         UserRepository.updateUser(user)
 
                         // enter new code finished, going to previous activity
