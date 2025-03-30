@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.clientspace.FileConverter.getImageBytes
 import com.example.clientspace.ui.User
 import com.example.clientspace.ui.UserRepository
 
@@ -84,7 +85,11 @@ class UserDetailsActivity : AppCompatActivity() {
 
     private fun bind(user : User) {
 
-        userImage.setImageBitmap(FileConverter.byteArrayToImage(user.image))
+        userImage.setImageBitmap(
+            FileConverter.byteArrayToImage(user.image ?:
+            getImageBytes(R.drawable.ic_default_avatar, this)
+            ))
+
         userNameText.text = user.userName
         userDescriptionText.text =
             user.description.ifBlank { "" }

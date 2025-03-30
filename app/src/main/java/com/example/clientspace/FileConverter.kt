@@ -1,6 +1,7 @@
 package com.example.clientspace
 
 import android.content.ContentResolver
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -54,5 +55,11 @@ object FileConverter {
 
     fun byteArrayToImage(byteArray: ByteArray) : Bitmap {
         return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    }
+
+    fun getImageBytes(resId : Int, context : Context) : ByteArray {
+        val inputStream = context.resources.openRawResource(resId)
+        val byteArray = inputStream.readBytes()
+        return byteArray
     }
 }

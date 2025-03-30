@@ -84,12 +84,7 @@ class ChatDetailActivity : AppCompatActivity() {
 
         // Log.e("cur user id", curUserId)
 
-        chatId = intent.getIntExtra("chatId", -1)
-        if (chatId == -1) {
-            val exString = "Cannot get chat Id outside extra"
-            Log.e("chat Id", exString)
-            throw Exception(exString)
-        }
+
 
         // Log.e("chat id", chatId.toString())
 
@@ -99,7 +94,7 @@ class ChatDetailActivity : AppCompatActivity() {
             throw Exception(exString)
         }
 
-        chat = user.chats.firstOrNull{ it.chatId == chatId } ?: run {
+        chat = intent.getParcelableExtra("chat", Chat::class.java) ?: run {
             val exString = "No chat with such Id : $chatId"
             Log.e("get chat", exString)
             throw Exception(exString)
@@ -107,7 +102,15 @@ class ChatDetailActivity : AppCompatActivity() {
 
         val chatName = chat.name
         val avatarBytes = chat.avatarImage // Получаем аватар
-        val avatarBitmap = FileConverter.byteArrayToImage(avatarBytes)
+
+        if (avatarBytes != null) {
+            val avatarBitmap = FileConverter.byteArrayToImage(avatarBytes)
+            binding.chatAvatar.setImageBitmap(avatarBitmap) // Устанавливаем аватар
+        }
+        else {
+            binding.chatAvatar.setImageResource(R.drawable.ic_default_avatar)
+        }
+
         val messages = chat.messages // Получаем сообщения
 
         // initialize voice recorder
@@ -115,7 +118,7 @@ class ChatDetailActivity : AppCompatActivity() {
 
         // Отображение данных
         binding.chatUserName.text = chatName // Устанавливаем имя
-        binding.chatAvatar.setImageBitmap(avatarBitmap) // Устанавливаем аватар
+
 
         val btnBack = binding.backButton
 

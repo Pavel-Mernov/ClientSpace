@@ -6,7 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class User(
     var userId : String,
-    var image : ByteArray,
+    var image : ByteArray? = null,
     var enterCode : ByteArray? = null,
     var userName : String,
     var description : String = "",
@@ -28,6 +28,15 @@ data class User(
 
     fun updateChat(chat : Chat) {
         val indexOfChat = chats.indexOfFirst { it.chatId == chat.chatId }
-        chats[indexOfChat] = chat
+
+        if (indexOfChat != -1) {
+            chats[indexOfChat] = chat
+        }
+        else {
+            chat.chatId = chats.maxOf { it.chatId } + 1
+
+            chats.add(chat)
+        }
+
     }
 }

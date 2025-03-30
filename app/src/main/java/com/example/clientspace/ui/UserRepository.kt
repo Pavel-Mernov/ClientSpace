@@ -1,22 +1,29 @@
 package com.example.clientspace.ui
 
 import android.content.Context
+import com.example.clientspace.FileConverter.getImageBytes
 import com.example.clientspace.R
 import java.time.LocalDateTime
 
 object UserRepository {
     private const val currentUserId = "pavel_mernov"
 
-    private fun getImageBytes(resId : Int, context : Context) : ByteArray {
-        val inputStream = context.resources.openRawResource(resId)
-        val byteArray = inputStream.readBytes()
-        return byteArray
-    }
+
 
     private lateinit var defaultUsers : MutableList<User>
 
     fun initialize(context : Context) {
         defaultUsers = listOf(
+            User(
+                userId = "mamed_farhad",
+                userName = "Мамед Ибрагимов",
+                description = "Кодер питонист | Python | Flask developer"
+            ),
+            User(
+                userId = "biba_boba_2k3",
+                userName = "Лунтик",
+                image = getImageBytes(R.drawable.ic_avatar3, context)
+            ),
             User(
                 "p_drozdova",
                 getImageBytes(R.drawable.ic_avatar4, context),
@@ -30,7 +37,6 @@ object UserRepository {
             ),
             User(
                 "ivan_davydov",
-                getImageBytes(R.drawable.ic_avatar3, context),
                 userName = "Иван Давыдов",
                 description = "Всем привет. Меня зовут Иван Давыдов. Я учусь в НИУ ВШЭ"
             ),
@@ -54,7 +60,7 @@ object UserRepository {
                 isCurrent = true,
                 listOf(
                     Chat(
-                        chatId = 0,
+                        chatId = 5,
                         avatarImage = getImageBytes(R.drawable.ic_avatar1, context),
                         name = "Сергей Виденин",
                         isForTwo = true,
@@ -87,7 +93,7 @@ object UserRepository {
                     ),
                     Chat(
                         chatId = 2,
-                        avatarImage = getImageBytes(R.drawable.ic_avatar3, context),
+                        // avatarImage = getImageBytes(R.drawable.ic_avatar3, context),
                         name = "Иван Давыдов",
                         isForTwo = true,
                         otherMembers = listOf(
@@ -145,6 +151,18 @@ object UserRepository {
 
     fun getCurrentUser() : User? {
         return findUserById(currentUserId)
+    }
+
+    fun getNotChattedUsers(user : User) : List<User> {
+
+
+        return defaultUsers
+            .filterNot { it.userId == user.userId }
+            .filterNot { thisUser ->
+                    user.chats.any { chat ->
+                        chat.isForTwo && chat.otherMembers.contains(thisUser.userId)
+                    }
+        }
     }
 
     fun findUserById(id : String) : User? {

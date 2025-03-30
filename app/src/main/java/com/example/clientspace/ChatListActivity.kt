@@ -65,10 +65,31 @@ class ChatListActivity : AppCompatActivity() {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 val query = chatSearchView.text.toString()
 
+
+                val notContactedUsers = UserRepository.getNotChattedUsers(curUser)
+
+                // Log.d("search", "Not contacted users: ${notContactedUsers.joinToString { it.userName }}")
+
+                val searchChats = notContactedUsers.map{
+                    Chat(
+                        avatarImage = it.image,
+                        name = it.userName,
+                        isForTwo = true,
+                        otherMembers = listOf(it.userId).toMutableList(),
+                    )
+                }.toMutableList()
+
+                searchChats.addAll(chats)
+
                 if (query.isNotBlank()) {
+
                     val queryRegex = Regex(query, RegexOption.IGNORE_CASE)
 
-                    val filteredChats = chats.filter {
+
+
+                    // Log.d("search", "Search chat names: all: ${searchChats.joinToString { it.name }}")
+
+                    val filteredChats = searchChats.filter {
                         /*
                         Log.e("Regex match:",
                             "$queryRegex to ${it.name}: " + queryRegex.containsMatchIn(it.name).toString())
@@ -76,12 +97,19 @@ class ChatListActivity : AppCompatActivity() {
                         queryRegex.containsMatchIn(it.name)
                     }
 
+                    // Log.d("search", "Filtered chat names: all: ${filteredChats.joinToString { it.name }}")
 
                     bind(filteredChats)
+
+
+                    // Log.d("search", "Query: $query contain match in Лунтик: ${queryRegex.containsMatchIn("Лунтик")}")
+
                     displayChats = filteredChats
                 }
                 else {
-                    bind(chats)
+                    bind(searchChats)
+
+                    displayChats = searchChats
                 }
 
                 chatSearchView.clearFocus()
@@ -98,6 +126,23 @@ class ChatListActivity : AppCompatActivity() {
                 tvProfile.visibility = View.GONE
                 try {
                     chatSearchView.visibility = View.VISIBLE
+
+                    val notContactedUsers = UserRepository.getNotChattedUsers(curUser)
+
+                    val searchChats = notContactedUsers.map{
+                        Chat(
+                            avatarImage = it.image,
+                            name = it.userName,
+                            isForTwo = true,
+                            otherMembers = listOf(it.userId).toMutableList(),
+                        )
+                    }.toMutableList()
+
+                    searchChats.addAll(chats)
+
+                    bind(searchChats)
+
+                    displayChats = searchChats
                 }
                 catch (e : Exception) {
                     e.message?.let { it1 -> Log.e("open search view", it1) }

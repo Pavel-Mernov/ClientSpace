@@ -7,10 +7,10 @@ import java.time.LocalDateTime
 
 @Parcelize
 data class Chat(
-    val chatId : Int, // Chat Id
-    val avatarImage: ByteArray,  // Avatar source
-    val name: String,      // User name
-    val messages: MutableList<Message>,
+    var chatId : Int = -1, // Chat Id
+    var avatarImage: ByteArray? = null,  // Avatar source
+    var name: String,      // User name
+    val messages: MutableList<Message> = emptyList<Message>().toMutableList(),
     val isForTwo: Boolean, // if chat can be only for two
     val otherMembers: MutableList<String>, // list of other user ids
     var draft: Message = Message("", "", LocalDateTime.now()), // last draft message

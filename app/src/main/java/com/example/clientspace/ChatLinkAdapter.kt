@@ -25,7 +25,7 @@ class ChatLinkAdapter(private val chats: List<Chat>, private val curUserId : Str
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
             val intent = Intent(context, ChatDetailActivity::class.java).apply {
-                putExtra("chatId", chat.chatId)
+                putExtra("chat", chat)
                 putExtra("curUserId", curUserId)
                 }
             context.startActivity(intent)
@@ -42,7 +42,13 @@ class ChatLinkAdapter(private val chats: List<Chat>, private val curUserId : Str
 
 
         fun bind(chat: Chat) {
-            avatarImageView.setImageBitmap(FileConverter.byteArrayToImage(chat.avatarImage))
+            if (chat.avatarImage !=  null) {
+                avatarImageView.setImageBitmap(FileConverter.byteArrayToImage(chat.avatarImage!!))
+            }
+            else {
+                avatarImageView.setImageResource(R.drawable.ic_default_avatar)
+            }
+
             nameTextView.text = chat.name
 
             val lastMessage = chat.messages.maxByOrNull { it.time }
@@ -71,7 +77,7 @@ class ChatLinkAdapter(private val chats: List<Chat>, private val curUserId : Str
             }
             else {
                 timeTextView.text = ""
-                lastMessageTextView.text = "Сообщения удалены"
+                lastMessageTextView.text = "Сообщений нет"
             }
         }
     }
